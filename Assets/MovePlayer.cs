@@ -5,19 +5,18 @@ using UnityEngine.InputSystem;
 
 public class MovePlayer : MonoBehaviour
 {
-   
+    private void Update()
+    {
+        Flip(); // Ruft  Flip auf
+    }
 
-  
-  private void Update()
-  {
-      Flip();
-  }
-
-  void Flip()
-  {
-      if (Keyboard.current.sKey.wasPressedThisFrame )
-      {
-          transform.Rotate(0,180,0);
-      }
-  }
+    void Flip()
+    {
+        // Überprüft ob die 'S'-Taste gedrückt wurde
+        if (Keyboard.current.sKey.wasPressedThisFrame)
+        {
+            transform.Rotate(0, 180, 0); // Dreht das GameObject um 180 Grad um die Y-Achse
+        }
+    }
 }
+

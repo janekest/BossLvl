@@ -6,39 +6,36 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField]  DoorBehaviour _doorBehaviour;
+    [SerializeField] DoorBehaviour _doorBehaviour; 
 
-    [SerializeField] bool _isDoorOpenSwitch;
-    [SerializeField] bool _isDoorCloseSwitch;
+    [SerializeField] bool _isDoorOpenSwitch; // Schalter zum Öffnen der Tür
+    [SerializeField] bool _isDoorCloseSwitch; // Schalter zum Schließen der Tür
 
-     float _switchSizeY;
-      Vector3 _switchUpPos;
-      Vector3 _switchDownPos;
-      float _switchSpeed = 1f;
-      float _switchDelay = 0.2f;
-      bool _isPressingSwitch = false;
-  
-    // Start is called before the first frame update
+    float _switchSizeY; // Höhe des Schalters
+    Vector3 _switchUpPos;
+    Vector3 _switchDownPos;
+    float _switchSpeed = 1f; // Geschwindigkeit des Schalters
+    float _switchDelay = 0.2f; // Verzögerung des Schalters
+    bool _isPressingSwitch = false;
+
     void Awake()
-
     {
         _switchSizeY = transform.localScale.y / 2;
         
-       _switchUpPos = transform.position;
-           _switchDownPos= new Vector3(transform.position.x,
-            transform.position.y - _switchSizeY , transform.position.z);
+        _switchUpPos = transform.position; 
+        _switchDownPos = new Vector3(transform.position.x, transform.position.y - _switchSizeY, transform.position.z);
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         if (_isPressingSwitch)
         {
-            MoveSwitchDown();
+            MoveSwitchDown(); // Bewegt den Schalter nach unten
         }
         else if (!_isPressingSwitch)
         {
-            MoveSwitchUp();
+            MoveSwitchUp(); // Bewegt den Schalter nach oben
         }
     }
     
@@ -46,8 +43,7 @@ public class Player : MonoBehaviour
     {
         if (transform.position != _switchDownPos)
         {
-            transform.position = Vector3.MoveTowards(transform.position,
-                _switchDownPos, _switchSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, _switchDownPos, _switchSpeed * Time.deltaTime); // Bewegt den Schalter zur unteren Position
         }
     }
     
@@ -55,8 +51,7 @@ public class Player : MonoBehaviour
     {
         if (transform.position != _switchUpPos)
         {
-            transform.position = Vector3.MoveTowards(transform.position,
-                _switchUpPos, _switchSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, _switchUpPos, _switchSpeed * Time.deltaTime); // Bewegt den Schalter zur oberen Position
         }
     }
 
@@ -64,33 +59,30 @@ public class Player : MonoBehaviour
     {
         if (collison.CompareTag("Player"))
         {
-            _isPressingSwitch = !_isPressingSwitch;
+            _isPressingSwitch = !_isPressingSwitch; // Schalterzustand umkehren
             
             if (_isDoorOpenSwitch && !_doorBehaviour._isDoorOpen)
             {
-                _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
+                _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen; // Tür öffnen
             }
             else if (_isDoorCloseSwitch && _doorBehaviour._isDoorOpen)
             {
-                _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
+                _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen; // Tür schließen
             }
-           
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
-
     {
         if (collision.CompareTag("Player"))
         {
-            StartCoroutine(SwitchUpDelay(_switchDelay));
+            StartCoroutine(SwitchUpDelay(_switchDelay)); // Verzögerung bevor der Schalter zurückgesetzt wird
         }
     }
 
     IEnumerator SwitchUpDelay(float waitTime)
     {
-        yield return new WaitForSeconds(waitTime);
+        yield return new WaitForSeconds(waitTime); 
         _isPressingSwitch = false;
     }
-    
 }

@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class MonsterDamage : MonoBehaviour
 {
-    [SerializeField] private GameObject redParticles; // Prefab für Partikel-Effekte beim Zerstören
+    [SerializeField] private GameObject redParticles; // Partikel-Effekte beim Zerstören
     [SerializeField] private float health = 100f; // Gesundheit des Gegners
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Prüfen, ob der Weak Point getroffen wurde
+        // Prüft ob der Weak Point getroffen wurde
         if (collision.gameObject.CompareTag("WeakPoint"))
         {
             TakeDamage(health); // Gegner wird zerstört

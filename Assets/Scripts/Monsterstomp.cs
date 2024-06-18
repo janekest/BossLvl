@@ -9,16 +9,16 @@ public class MonsterStomp : MonoBehaviour
             Player1 player = collision.gameObject.GetComponent<Player1>();
             if (player != null)
             {
-               // player.OnStomp(); // Methode aufrufen, die den Spieler stört
+                player.OnStomp(); 
             }
         }
         else if (collision.gameObject.CompareTag("WeakPoint"))
         {
-            // Hier kannst du die Logik einfügen, die den übergeordneten Gegner zerstört
-            Transform parentTransform = collision.gameObject.transform.parent;
+            //  Zerstören des übergeordneten Gegners
+            Transform parentTransform = collision.gameObject.transform.parent; // Zugriff auf Transform des Schwachpunkts
             if (parentTransform != null)
             {
-                Destroy(parentTransform.gameObject);
+                Destroy(parentTransform.gameObject); // Zerstört das  Spielobjekt
             }
         }
     }

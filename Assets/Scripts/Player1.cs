@@ -7,29 +7,29 @@ public class Player1 : MonoBehaviour
     private Rigidbody2D rb;
     private float inputDirection;
 
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float movementSpeed = 5f;
-    [SerializeField] private float sneakSpeed = 2.5f; // Speed while sneaking
+    [SerializeField] private float jumpForce = 5f; // Sprungkraft
+    [SerializeField] private float movementSpeed = 5f; // Bewegungsgeschwindigkeit
+    [SerializeField] private float sneakSpeed = 2.5f; // Geschwindigkeit beim Schleichen
     [SerializeField] private Transform groundCheckPosition;
-    [SerializeField] private float groundCheckRadius = 1f;
-    [SerializeField] private LayerMask layerGroundCheck;
-    [SerializeField] private int startingJumpCount;
-    private int jumpCount;
+    [SerializeField] private float groundCheckRadius = 1f; 
+    [SerializeField] private LayerMask layerGroundCheck; 
+    [SerializeField] private int startingJumpCount; // Anfangssprunganzahl
+    private int jumpCount; // Verbleibende Sprünge
 
-    private bool isFacingRight = true;
-    public bool ClimbingAllowed { get; set; }
+    private bool isFacingRight = true; // Blickrichtung
+    public bool ClimbingAllowed { get; set; } 
 
-    private UiLevelManager uiLevelManager; // Reference to UiLevelManager
-    private bool isSneaking = false; // Sneak state
-    public CoinGameManager cgm;
+    private UiLevelManager uiLevelManager;
+    private bool isSneaking = false; 
+    public CoinGameManager cgm; 
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        uiLevelManager = FindObjectOfType<UiLevelManager>(); // Find UiLevelManager in scene
+        rb = GetComponent<Rigidbody2D>(); 
+        uiLevelManager = FindObjectOfType<UiLevelManager>(); // Findet UiLevelManager in der Szene
         Debug.Log("Start!");
 
-        // Subscribe to the jump action
+        // Abonniert die Sprungaktion
         var playerInput = GetComponent<PlayerInput>();
         playerInput.actions.FindAction("Jump").performed += ctx => OnJump();
         playerInput.actions.FindAction("Sneak").performed += OnSneakStart;
@@ -38,74 +38,72 @@ public class Player1 : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float currentSpeed = isSneaking ? sneakSpeed : movementSpeed;
-        rb.velocity = new Vector2(inputDirection * currentSpeed, rb.velocity.y);
+        float currentSpeed = isSneaking ? sneakSpeed : movementSpeed; // Bestimmt die aktuelle Geschwindigkeit
+        rb.velocity = new Vector2(inputDirection * currentSpeed, rb.velocity.y); 
     }
 
     void OnJump()
     {
         if (Physics2D.OverlapCircle(groundCheckPosition.position, groundCheckRadius, layerGroundCheck))
         {
-            jumpCount = startingJumpCount;
+            jumpCount = startingJumpCount; // Setzt die Sprunganzahl zurück
         }
 
         if (jumpCount > 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            jumpCount--;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Führt den Sprung aus
+            jumpCount--; 
         }
     }
 
     void OnMove(InputValue inputValue)
     {
-        inputDirection = inputValue.Get<float>();
+        inputDirection = inputValue.Get<float>(); 
         Debug.Log("Move! " + inputDirection);
 
         if (inputDirection > 0 && !isFacingRight)
         {
-            Flip();
+            Flip(); // Dreht den Spieler nach rechts
         }
         else if (inputDirection < 0 && isFacingRight)
         {
-            Flip();
+            Flip(); // Dreht den Spieler nach links
         }
     }
 
     void OnSneakStart(InputAction.CallbackContext context)
     {
-        isSneaking = true;
+        isSneaking = true; // Startet den Schleichmodus
         Debug.Log("Sneaking");
     }
 
     void OnSneakEnd(InputAction.CallbackContext context)
     {
-        isSneaking = false;
+        isSneaking = false; // Beendet den Schleichmodus
         Debug.Log("Stopped Sneaking");
     }
 
     void Flip()
     {
-        Vector3 currentScale = transform.localScale;
+        Vector3 currentScale = transform.localScale; // Holt die aktuelle Skalierung
         currentScale.x *= -1;
-        transform.localScale = currentScale;
+        transform.localScale = currentScale; 
 
-        isFacingRight = !isFacingRight;
+        isFacingRight = !isFacingRight; // Ändert die Blickrichtung
     }
 
-    // Method called when player dies
+    //  wird aufgerufen, wenn der Spieler stirbt
     public void PlayerDied()
     {
-        // Trigger game over in UiLevelManager
-        uiLevelManager.OnGameLose();
+        uiLevelManager.OnGameLose(); // Löst das Spielverloren-Ereignis aus
     }
 
-    // Method called when player is stomped (triggered by MonsterStomp script)
+    //  wird aufgerufen wenn der Spieler gestampft wird (durch MonsterStomp-Skript)
     public void OnStomp()
     {
-        // Action to perform when player is stomped (e.g., decrease health, play animation)
-        Debug.Log("Player stomp action!");
+        Debug.Log("Player stomp action!"); 
 
-        // Example: Destroy the player (this can be replaced with appropriate game logic)
+        
         Destroy(gameObject);
     }
 
@@ -113,8 +111,8 @@ public class Player1 : MonoBehaviour
     {
         if (other.CompareTag("coin"))
         {
-            Destroy(other.gameObject);
-            cgm.coinCounter++;
+            Destroy(other.gameObject); // Zerstört das Münzobjekt
+            cgm.coinCounter++; // Erhöht den Münzzähler
         }
     }
 }

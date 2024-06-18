@@ -3,38 +3,38 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     [Header("Jumping Settings")]
-    [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private float groundCheckRadius = 0.2f;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float minJumpInterval = 2f;
-    [SerializeField] private float maxJumpInterval = 5f;
-    [SerializeField] private float jumpDamage = 50f;
+    [SerializeField] private float jumpForce = 10f; // Sprungkraft des Gegners
+    [SerializeField] private Transform groundCheck; 
+    [SerializeField] private float groundCheckRadius = 0.2f; 
+    [SerializeField] private LayerMask groundLayer; // Layer für den Boden
+    [SerializeField] private float minJumpInterval = 2f; // Minimales Intervall zwischen Sprüngen
+    [SerializeField] private float maxJumpInterval = 5f; 
+    [SerializeField] private float jumpDamage = 50f; // Schaden den der Gegner durch Sprung verursacht
 
     [Header("Shooting Settings")]
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private Transform firePoint;
-    [SerializeField] private float bulletSpeed = 10f;
-    [SerializeField] private float shootingInterval = 2f;
+    [SerializeField] private GameObject bulletPrefab; 
+    [SerializeField] private Transform firePoint; // Feuerpunkt für das Schießen
+    [SerializeField] private float bulletSpeed = 10f; // Geschwindigkeit des Geschosses
+    [SerializeField] private float shootingInterval = 2f; // Intervall zwischen Schüssen
 
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float minIdleTime = 1f;
-    [SerializeField] private float maxIdleTime = 3f;
+    [SerializeField] private float moveSpeed = 2f; // Geschwindigkeit der Bewegung
+    [SerializeField] private float minIdleTime = 1f; 
+    [SerializeField] private float maxIdleTime = 3f; // Maximale Dauer des Stillstands
 
     private Rigidbody2D rb;
-    private bool isGrounded;
-    private float jumpTimer;
-    private float shootingTimer;
-    private Transform playerTransform;
-    private bool isFacingRight = true;
-    private float idleTimer;
-    private State currentState;
+    private bool isGrounded; 
+    private float jumpTimer; // Timer für die Sprungintervalle
+    private float shootingTimer; // Timer für die Schussintervalle
+    private Transform playerTransform; 
+    private bool isFacingRight = true; 
+    private float idleTimer; 
+    private State currentState; // Aktueller Zustand des Gegners
 
     private enum State
     {
-        Idle,
-        Moving
+        Idle, // Zustand: Stillstand
+        Moving // Zustand: Bewegung
     }
 
     void Start()
@@ -42,52 +42,52 @@ public class EnemyController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.mass = 5f;
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        jumpTimer = GetRandomJumpInterval();
-        shootingTimer = shootingInterval;
+        jumpTimer = GetRandomJumpInterval(); 
+        shootingTimer = shootingInterval; 
         idleTimer = GetRandomIdleTime();
-        currentState = State.Idle;
+        currentState = State.Idle; // Starten im Zustand "Stillstand"
     }
 
     void Update()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer); // Überprüfen ob der Gegner auf dem Boden ist
 
-        // Handle jumping
+        // Sprungverhalten 
         jumpTimer -= Time.deltaTime;
         if (jumpTimer <= 0 && isGrounded)
         {
-            Jump();
-            jumpTimer = GetRandomJumpInterval();
+            Jump(); // Ausführen des Sprungs
+            jumpTimer = GetRandomJumpInterval(); // Aktualisieren des Sprungtimers
         }
 
-        // Handle shooting
+        // Schussverhalten 
         shootingTimer -= Time.deltaTime;
         if (shootingTimer <= 0 && isGrounded)
         {
-            Shoot();
-            shootingTimer = shootingInterval;
+            Shoot(); // Ausführen des Schusses
+            shootingTimer = shootingInterval; 
         }
 
-        // Handle movement
+        // Bewegungsverhalten 
         switch (currentState)
         {
             case State.Idle:
                 idleTimer -= Time.deltaTime;
                 if (idleTimer <= 0)
                 {
-                    currentState = State.Moving;
-                    idleTimer = GetRandomIdleTime();
+                    currentState = State.Moving; // Übergang zum Zustand "Bewegung"
+                    idleTimer = GetRandomIdleTime(); 
                 }
                 break;
             case State.Moving:
-                MoveTowardsPlayer();
+                MoveTowardsPlayer(); // Bewegung in Richtung des Spielers
                 break;
         }
 
-        // Handle rotation towards player
+        // Ausrichtung des Gegners zum Spieler
         if (isGrounded)
         {
-            RotateTowardsPlayer();
+            RotateTowardsPlayer(); // Ausrichten des Gegners zum Spieler
         }
     }
 
@@ -98,27 +98,27 @@ public class EnemyController : MonoBehaviour
             Vector2 direction = (playerTransform.position - transform.position).normalized;
             rb.velocity = new Vector2(direction.x * moveSpeed, rb.velocity.y);
 
-            // Transition back to idle state
+            // Zurück zum Stillstandszustand wechseln
             idleTimer -= Time.deltaTime;
             if (idleTimer <= 0)
             {
-                currentState = State.Idle;
-                rb.velocity = new Vector2(0, rb.velocity.y);
-                idleTimer = GetRandomIdleTime();
+                currentState = State.Idle; // Übergang zum Zustand "Stillstand"
+                rb.velocity = new Vector2(0, rb.velocity.y); // Stoppen der Bewegung
+                idleTimer = GetRandomIdleTime(); 
             }
         }
     }
 
     private void Jump()
     {
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Ausführen des Sprungs
     }
 
     private void Shoot()
     {
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Rigidbody2D rbBullet = bullet.GetComponent<Rigidbody2D>();
-        rbBullet.velocity = (isFacingRight ? Vector2.right : Vector2.left) * bulletSpeed;
+        rbBullet.velocity = (isFacingRight ? Vector2.right : Vector2.left) * bulletSpeed; // Geschwindigkeit des Geschosses setzen
     }
 
     private void RotateTowardsPlayer()
@@ -129,11 +129,11 @@ public class EnemyController : MonoBehaviour
 
             if (targetDirection.x > 0 && !isFacingRight)
             {
-                Flip();
+                Flip(); // Drehen des Gegners wenn der Spieler rechts ist und der Gegner nach links schaut
             }
             else if (targetDirection.x < 0 && isFacingRight)
             {
-                Flip();
+                Flip(); // Drehen des Gegners wenn der Spieler links ist und der Gegner nach rechts schaut
             }
         }
     }
@@ -142,12 +142,12 @@ public class EnemyController : MonoBehaviour
     {
         isFacingRight = !isFacingRight;
 
-        // Flip the enemy sprite
+       
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
 
-        // Flip the fire point to face the correct direction
+        // Feuerpunkt umdrehen um in die richtige Richtung zu zielen
         Vector3 firePointScale = firePoint.localScale;
         firePointScale.x *= -1;
         firePoint.localScale = firePointScale;
@@ -155,29 +155,30 @@ public class EnemyController : MonoBehaviour
 
     private float GetRandomJumpInterval()
     {
-        return Random.Range(minJumpInterval, maxJumpInterval);
+        return Random.Range(minJumpInterval, maxJumpInterval); // Zufälliges Intervall für den Sprung 
     }
 
     private float GetRandomIdleTime()
     {
-        return Random.Range(minIdleTime, maxIdleTime);
+        return Random.Range(minIdleTime, maxIdleTime); // Zufällige Dauer des Stillstands
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>(); // Zugriff auf die Spieler-Gesundheit
             if (playerHealth != null)
             {
-                Vector2 contactNormal = collision.GetContact(0).normal;
+                Vector2 contactNormal = collision.GetContact(0).normal; 
                 if (contactNormal.y > 0 && rb.velocity.y < 0)
                 {
-                    playerHealth.TakeDamage(jumpDamage);
+                    playerHealth.TakeDamage(jumpDamage); // Schaden am Spieler verursachen wenn von oben herabgesprungen wird
                 }
             }
         }
     }
 }
+
 
 

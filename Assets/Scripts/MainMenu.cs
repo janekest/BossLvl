@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuScript : MonoBehaviour
 {
-    //serializefiled feld in unity zum auswählen von buttons/panels usw.
     [SerializeField] private CanvasGroup mainpanel;
     [SerializeField] private Button startnewGamebutton;
     [SerializeField] private Button levelselectionbutton;
@@ -18,91 +17,77 @@ public class MainMenuScript : MonoBehaviour
     [SerializeField] private Button quitlevelselectionbutton;
     
     [SerializeField] private Button QUitgamebutton;
-    //string ist ein feld zum schreiben
     [SerializeField] private string nameNextScene1;
     [SerializeField] private string nameNextScene2;
     [SerializeField] private string nameNextScene3;
-    // Start is called before the first frame update
+
     void Start()
     {
-        //zuweisen was die einzelnen knöpfe/panel machen
+        // Panel und Button Listener zuweisen
         levelSelectionPanel.HideCanvasGroup();
         startnewGamebutton.onClick.AddListener(LoadLevel1);
         levelselectionbutton.onClick.AddListener(openLevelPanel);
         quitlevelselectionbutton.onClick.AddListener(closeLevelPanel);
         level1button.onClick.AddListener(LoadLevel1);
+        
         level2button.onClick.AddListener(LoadLevel2);
         level3button.onClick.AddListener(LoadLevel3);
         QUitgamebutton.onClick.AddListener(quitgame);
 
+        // Überprüfen und aktivieren der Level-Buttons
         level2button.interactable = false;
         if (PlayerPrefs.HasKey(nameNextScene2))
         {
-
-            if ( PlayerPrefs.GetInt(nameNextScene2) == 1)
+            if (PlayerPrefs.GetInt(nameNextScene2) == 1)
             {
                 level2button.interactable = true;
             }
-
-           
         }
         
         level3button.interactable = false;
         if (PlayerPrefs.HasKey(nameNextScene3))
         {
-
-            if ( PlayerPrefs.GetInt(nameNextScene3) == 1)
+            if (PlayerPrefs.GetInt(nameNextScene3) == 1)
             {
                 level3button.interactable = true;
             }
-
-           
         }
-        
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
     }
 
-   
     void closeLevelPanel()
     {
-        //levelscreen ausblenden
-        levelSelectionPanel.HideCanvasGroup();
-        mainpanel.ShowCanvasGroup();
+        levelSelectionPanel.HideCanvasGroup(); // Levelauswahl-Panel verstecken
+        mainpanel.ShowCanvasGroup(); // Hauptmenü-Panel anzeigen
     }
+
     void openLevelPanel()
     {
-        //levelscreen zeigen
-        levelSelectionPanel.ShowCanvasGroup();
-        mainpanel.HideCanvasGroup();
+        levelSelectionPanel.ShowCanvasGroup(); // Levelauswahl-Panel anzeigen
+        mainpanel.HideCanvasGroup(); // Hauptmenü-Panel verstecken
     }
     
     void LoadLevel1()
     {
-        //aus dem scenenmanager die scene laden die ins SerializeField geschrieben wurde
-        //loadnextlevel
-        SceneManager.LoadScene(nameNextScene1);
+        SceneManager.LoadScene(nameNextScene1); // Level 1 laden
     }
    
     void LoadLevel2()
     {
-        //loadnextlevel
-        SceneManager.LoadScene(nameNextScene2);
+        SceneManager.LoadScene(nameNextScene2); // Level 2 laden
     }
     
     void LoadLevel3()
     {
-        //loadnextlevel
-        SceneManager.LoadScene(nameNextScene3);
+        SceneManager.LoadScene(nameNextScene3); // Level 3 laden
     }
+
     public void quitgame()
     {
-        //außerhalb von unity das programm schließen
-        Application.Quit();
+        Application.Quit(); // Spiel beenden
         Debug.Log(message:"gameclosed");
     }
 }
